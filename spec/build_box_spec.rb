@@ -57,7 +57,7 @@ describe "BuildBox" do
       expect(BuildBox.config).to receive(:bad_methods).at_least(:once).and_return([])
       expect(BuildBox.config).to receive(:bad_constants).at_least(:once).and_return([])
       BuildBox.perform("class Foo \n def test \n 'hi' \n end \n end")
-      expect(BuildBox.perform('Foo.new.test').error?).to  be_true #eql()"NameError: uninitialized constant Foo"
+      expect(BuildBox.perform('Foo.new.test').error?).to  be_true
       expect(BuildBox.perform('Foo.new.test').error).to  eql("NameError: uninitialized constant Foo")
     end
 
