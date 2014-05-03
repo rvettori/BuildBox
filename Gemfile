@@ -1,12 +1,10 @@
-source "http://rubygems.org"
+source 'https://rubygems.org'
 
-group :development do
-  gem "mocha"
-  gem "rake"
-  gem "rspec"
-  gem "bundler"
-  gem "jeweler"
-  gem "yard"
-  gem "redcarpet", '1.17.2'
-  gem 'github-markup'
+# Specify your gem's dependencies in build_box.gemspec
+gemspec
+
+group :development, :test do
+  gem 'rspec'
+  gem 'simplecov', :require => false
+  gem 'pry'
 end

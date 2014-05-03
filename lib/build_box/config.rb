@@ -1,6 +1,6 @@
-require 'sandrbox/options/option'
+require 'build_box/options/option'
 
-module Sandrbox
+module BuildBox
   
   module Config
     extend self
@@ -51,7 +51,8 @@ module Sandrbox
       [:Kernel, "`".to_sym],
       [:Class, "`".to_sym]
     ]
-    option :bad_constants, :default => [:Continuation, :Open3, :File, :Dir, :IO, :Sandrbox, :Process, :Thread, :Fiber, :Gem, :Net, :ThreadGroup, :SystemExit, :SignalException, :Interrupt, :FileTest, :Signal]
-    
+    option :bad_constants, :default => [:Continuation, :Open3, :File, :Dir, :IO, :BuildBox, :Process, :Thread, :Fiber, :Gem, :Net, :ThreadGroup, :SystemExit, :SignalException, :Interrupt, :FileTest, :Signal]
+   
+    option :timeout, :default => 3 
   end
 end
