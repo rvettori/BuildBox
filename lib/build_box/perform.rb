@@ -13,7 +13,7 @@ class BuildBox::Perform
 
   def evaluate
     t = Thread.new do
-      $SAFE = 3
+      $SAFE = 2
       begin
         BuildBox.config.bad_methods.each {|meth| remove_method(meth.first, meth.last)}
         BuildBox.config.bad_constants.each {|const| remove_constant(const)}

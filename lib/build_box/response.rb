@@ -1,6 +1,6 @@
 class BuildBox::Response
 
-  attr_accessor :output, :error, :old_constants
+  attr_accessor :output, :error
 
   def initialize(code)
     evaluate(code)
@@ -10,7 +10,7 @@ class BuildBox::Response
     !@error.nil?
   end
 
-  # private
+  private
 
   def evaluate(code)
     preserve_namespace
@@ -18,14 +18,15 @@ class BuildBox::Response
     @output = result.output
     @error  = result.error
     restore_namespace
+    self
   end
 
   def preserve_namespace
-    self.old_constants = Object.constants
+    @old_constants = Object.constants
   end
   
   def restore_namespace
-    (Object.constants - self.old_constants).each {|bad_constant| Object.send(:remove_const, bad_constant)}
+    (Object.constants - @old_constants).each {|bad_constant| Object.send(:remove_const, bad_constant)}
   end
 
 

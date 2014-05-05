@@ -75,21 +75,21 @@ describe "BuildBox" do
       end
 
       it 'does not exec' do
-        expect(BuildBox.config).to receive(:bad_methods).at_least(:once).and_return([])
+        expect(BuildBox.config).to receive(:bad_methods).at_least(:once).and_return([[:Object, :exec]])
         expect(BuildBox.config).to receive(:bad_constants).at_least(:once).and_return([])
-        expect(BuildBox.perform('exec("ps")').error).to eql("SecurityError: Insecure operation - exec")
+        expect(BuildBox.perform('exec("ps")').error).to eql("SecurityError: Insecure PATH - ps")
       end
 
       it 'does not exec for kernel' do
-        expect(BuildBox.config).to receive(:bad_methods).at_least(:once).and_return([])
+        expect(BuildBox.config).to receive(:bad_methods).at_least(:once).and_return([[:Kernel, :exec]])
         expect(BuildBox.config).to receive(:bad_constants).at_least(:once).and_return([])
-        expect(BuildBox.perform('Kernel.exec("ps")').error).to eql("SecurityError: Insecure operation - exec")
+        expect(BuildBox.perform('Kernel.exec("ps")').error).to eql("NameError: undefined local variable or method `exec' for Kernel:Module")
       end
 
       it 'does not `' do
-        expect(BuildBox.config).to receive(:bad_methods).at_least(:once).and_return([])
+        expect(BuildBox.config).to receive(:bad_methods).at_least(:once).and_return([[:Object, "`".to_sym], [:Kernel, "`".to_sym], [:Class, "`".to_sym]])
         expect(BuildBox.config).to receive(:bad_constants).at_least(:once).and_return([])
-        expect(BuildBox.perform('`ls`').error).to eql("SecurityError: Insecure operation - `")
+        expect(BuildBox.perform('`ls`').error).to eql("NameError: undefined local variable or method ``' for Kernel:Module")
       end
 
       it 'does not implement File' do
