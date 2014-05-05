@@ -31,7 +31,7 @@ end
 ## How To Use It
 
 ```ruby
-require 'sandrbox'
+require 'build_box'
 
 # good execution
 result = nil
