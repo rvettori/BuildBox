@@ -7,4 +7,5 @@ group :development, :test do
   gem 'rspec'
   gem 'simplecov', :require => false
   gem 'pry'
+  gem 'rake-notes'
 end

@@ -5,7 +5,7 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 require 'pry'
-require 'simplecov'
+# require 'simplecov'
 # SimpleCov.start
 
 # ENV['BUILD_BOX_ENV'] = 'test'

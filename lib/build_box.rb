@@ -1,3 +1,4 @@
+require 'ostruct'
 require "build_box/version"
 require "build_box/config"
 require "build_box/response"
@@ -11,8 +12,8 @@ module BuildBox
   end
   alias :config :configure
 
-  def perform(code)
-    BuildBox::Response.new(code)
+  def perform(code, binding_context=TOPLEVEL_BINDING)
+    BuildBox::Response.new(code, binding_context)
   end
 
 end

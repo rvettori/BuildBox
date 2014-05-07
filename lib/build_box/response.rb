@@ -1,9 +1,9 @@
 class BuildBox::Response
 
-  attr_accessor :output, :error
+  attr_accessor :output, :error, :code # TODO: return de evaluated code
 
-  def initialize(code)
-    evaluate(code)
+  def initialize(code, binding_context)
+    evaluate(code, binding_context)
   end
 
   def error?
@@ -12,11 +12,12 @@ class BuildBox::Response
 
   private
 
-  def evaluate(code)
+  def evaluate(code, binding_context)
     preserve_namespace
-    result  = BuildBox::Perform.new(code)
+    result  = BuildBox::Perform.new(code, binding_context)
     @output = result.output
     @error  = result.error
+    @code   = result.code
     restore_namespace
     self
   end

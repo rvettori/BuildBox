@@ -33,15 +33,15 @@ describe "BuildBox" do
     it 'allows constants to be used after uninitializing them' do
       expect(BuildBox.config).to receive(:bad_methods).and_return([])
       expect(BuildBox.config).to receive(:bad_constants).and_return([:Net])
+      expect(Object.const_get(:Net)).to_not raise_error
       result = BuildBox.perform(' Net.methods')
       expect(result.error?).to be_true
-      expect(Object.const_get(:Net)).to_not raise_error
     end
 
     it 'allows methods to be called after removing them' do
-      expect(BuildBox.config).to receive(:bad_methods).and_return([[:Kernel, :exit]])
+      expect(BuildBox.config).to receive(:bad_methods).and_return([])
       expect(BuildBox.config).to receive(:bad_constants).and_return([])
-      BuildBox.perform(['a = 1 + 1'])
+      BuildBox.perform('a = 1 + 1; test;')
       Kernel.methods.should include(:exit)
     end
 
@@ -61,6 +61,11 @@ describe "BuildBox" do
       expect(BuildBox.perform('Foo.new.test').error).to  eql("NameError: uninitialized constant Foo")
     end
 
+    it "permit add context varables" do
+      ctx = OpenStruct.new(:params => {a: 1, b: 2})
+      expect(BuildBox.perform('params[:a] + params[:b]', ctx.__binding__).output).to eql(3)
+    end
+
     context 'unsafe commands' do
       it 'does not exit' do
         expect(BuildBox.config).to receive(:bad_methods).at_least(:once).and_return([])
@@ -77,19 +82,19 @@ describe "BuildBox" do
       it 'does not exec' do
         expect(BuildBox.config).to receive(:bad_methods).at_least(:once).and_return([[:Object, :exec]])
         expect(BuildBox.config).to receive(:bad_constants).at_least(:once).and_return([])
-        expect(BuildBox.perform('exec("ps")').error).to eql("SecurityError: Insecure PATH - ps")
+        expect(BuildBox.perform('exec("ps")').error).to include("NameError: undefined local variable or method `exec' for")
       end
 
       it 'does not exec for kernel' do
         expect(BuildBox.config).to receive(:bad_methods).at_least(:once).and_return([[:Kernel, :exec]])
         expect(BuildBox.config).to receive(:bad_constants).at_least(:once).and_return([])
-        expect(BuildBox.perform('Kernel.exec("ps")').error).to eql("NameError: undefined local variable or method `exec' for Kernel:Module")
+        expect(BuildBox.perform('Kernel.exec("ps")').error).to include("NameError: undefined local variable or method `exec' ")
       end
 
       it 'does not `' do
         expect(BuildBox.config).to receive(:bad_methods).at_least(:once).and_return([[:Object, "`".to_sym], [:Kernel, "`".to_sym], [:Class, "`".to_sym]])
         expect(BuildBox.config).to receive(:bad_constants).at_least(:once).and_return([])
-        expect(BuildBox.perform('`ls`').error).to eql("NameError: undefined local variable or method ``' for Kernel:Module")
+        expect(BuildBox.perform('`ls`').error).to include("NameError: undefined local variable or method ``' for")
       end
 
       it 'does not implement File' do
