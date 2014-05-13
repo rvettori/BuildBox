@@ -1,4 +1,3 @@
-require 'ostruct'
 require "build_box/version"
 require "build_box/config"
 require "build_box/response"

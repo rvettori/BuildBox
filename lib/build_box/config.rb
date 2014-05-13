@@ -53,34 +53,8 @@ module BuildBox
     ]
 
     option :bad_constants, :default =>   [:Continuation, :Open3, :File, :Dir, :IO, :BuildBox, :Process, :Thread, :Fiber, :Gem, :Net, :ThreadGroup]
-
-    option :unsafe_methods, :default => [
-      [:Object, :autoload],
-      [:Kernel, :autoload],
-      [:Object, :autoload?],
-      [:Kernel, :autoload?],
-      [:Object, :exit],
-      [:Kernel, :exit],
-      [:Object, :exit!],
-      [:Kernel, :exit!],
-      [:Object, :at_exit],
-      [:Kernel, :at_exit],
-      [:Object, :exec],
-      [:Kernel, :exec],
-      [:Object, :fork],
-      [:Kernel, :fork],
-      [:Object, :load],
-      [:Kernel, :load],
-      [:Object, :test],
-      [:Kernel, :test],
-      [:Object, :require],
-      [:Kernel, :require],
-      [:Object, :require_relative],
-      [:Kernel, :require_relative],      
-    ]
-
-    option :unsafe_constants, :default => [:SystemExit, :SignalException, :Interrupt, :FileTest, :Signal]
    
     option :timeout, :default => 3 
+    option :security_level, :default => 3 # (0..3)
   end
 end

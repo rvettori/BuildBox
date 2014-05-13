@@ -122,9 +122,8 @@ describe "BuildBox" do
       end
 
       it 'does not implement Open3 even after requiring it' do
-        expect(BuildBox.config).to receive(:bad_methods).at_least(:once).and_return([])
-        expect(BuildBox.config).to receive(:bad_constants).at_least(:once).and_return([:Open3])
-        expect(BuildBox.perform('require "open3"; Open3').error).to eql("SecurityError: Insecure operation - require")
+        expect(BuildBox.config).to receive(:bad_methods).at_least(:once).and_return([[:Object,:require], [:kernel, :require]])
+        expect(BuildBox.perform('require "open3"; Open3').error?).to be_true #eql("SecurityError: Insecure operation - require")
       end
 
       it 'does not allow you to manually call protected BuildBox methods' do

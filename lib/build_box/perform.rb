@@ -14,11 +14,10 @@ class BuildBox::Perform
 
   def evaluate
     t = Thread.new do
-      $SAFE = 3
+      $SAFE = BuildBox.config.security_level
       begin
         BuildBox.config.bad_methods.each {|meth| remove_method(meth.first, meth.last)}
         BuildBox.config.bad_constants.each {|const| remove_constant(const)}
-        # @output = eval(@code, TOPLEVEL_BINDING, "build_box")
         @output = eval(@code, @binding_context, "build_box")
         @error  = nil
       rescue Exception => e
