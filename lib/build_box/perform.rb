@@ -2,11 +2,12 @@ class BuildBox::Perform
 
   attr_accessor :output, :error, :code, :unbound_methods, :unbound_constants
 
-  def initialize(code, binding_context=TOPLEVEL_BINDING)
+  def initialize(code, binding_context=TOPLEVEL_BINDING, security_level)
     self.unbound_methods   = []
     self.unbound_constants = []
     self.code              = code
-    @binding_context       = binding_context 
+    @binding_context       = binding_context
+    @security_level        = security_level
     evaluate
   end
 
@@ -14,7 +15,7 @@ class BuildBox::Perform
 
   def evaluate
     t = Thread.new do
-      $SAFE = BuildBox.config.security_level
+      $SAFE = @securit_level || 0
       begin
         BuildBox.config.bad_methods.each {|meth| remove_method(meth.first, meth.last)}
         BuildBox.config.bad_constants.each {|const| remove_constant(const)}

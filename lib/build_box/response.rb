@@ -2,8 +2,10 @@ class BuildBox::Response
 
   attr_accessor :output, :error, :code # TODO: return de evaluated code
 
-  def initialize(code, binding_context)
-    evaluate(code, binding_context)
+  alias :result :output
+
+  def initialize(code, binding_context, security_level)
+    evaluate(code, binding_context, security_level)
   end
 
   def error?
@@ -12,9 +14,9 @@ class BuildBox::Response
 
   private
 
-  def evaluate(code, binding_context)
+  def evaluate(code, binding_context, security_level)
     preserve_namespace
-    result  = BuildBox::Perform.new(code, binding_context)
+    result  = BuildBox::Perform.new(code, binding_context, security_level)
     @output = result.output
     @error  = result.error
     @code   = result.code

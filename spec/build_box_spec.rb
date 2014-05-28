@@ -66,6 +66,12 @@ describe "BuildBox" do
       expect(BuildBox.perform('params[:a] + params[:b]', ctx.__binding__).output).to eql(3)
     end
 
+    it "permit add define security level in specific perform" do
+      code = %{ eval('{a: 1, b:2, c:3}')}
+      expect(BuildBox.perform(code, TOPLEVEL_BINDING, 0).result).to eql({a: 1, b:2, c:3})
+      expect(BuildBox.perform(code, TOPLEVEL_BINDING, 3).error?).to be_false
+    end
+
     context 'unsafe commands' do
       it 'does not exit' do
         expect(BuildBox.config).to receive(:bad_methods).at_least(:once).and_return([])

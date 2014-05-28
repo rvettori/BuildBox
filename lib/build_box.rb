@@ -11,8 +11,8 @@ module BuildBox
   end
   alias :config :configure
 
-  def perform(code, binding_context=TOPLEVEL_BINDING)
-    BuildBox::Response.new(code, binding_context)
+  def perform(code, binding_context=TOPLEVEL_BINDING, security_level=BuildBox.config.security_level)
+    BuildBox::Response.new(code, binding_context, security_level)
   end
 
 end
