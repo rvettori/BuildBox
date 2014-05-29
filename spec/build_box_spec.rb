@@ -72,6 +72,22 @@ describe "BuildBox" do
       expect(BuildBox.perform(code, TOPLEVEL_BINDING, 3).error?).to be_false
     end
 
+    it "must permit pass hash parameters" do
+      code = %{ eval('{a: 1, b:2, c:3}')}      
+      expect(BuildBox.perform(code: code, security_level: 0).result).to eql({a: 1, b:2, c:3})      
+    end
+
+    it "must raise error when code key is not passed" do
+      code = %{ eval('{a: 1, b:2, c:3}')}
+      begin
+        expect(BuildBox.perform(cod: code, security_level: 0).result).to raise_error(RuntimeError) 
+      rescue => e 
+        raise e unless e.message == 'Code parameter must be informed.'
+      end
+    end
+
+
+
     context 'unsafe commands' do
       it 'does not exit' do
         expect(BuildBox.config).to receive(:bad_methods).at_least(:once).and_return([])
