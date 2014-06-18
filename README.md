@@ -21,10 +21,11 @@ Or install it yourself as:
 Remove all the bad methods and classes I can think of. But maybe you need more:
 
 ```ruby
-Sandrbox.configure do |config|
+BuildBox.configure do |config|
   config.bad_constants << :Rails
   config.bad_constants << :ActiveRecord
-  config.timeout = 3 # default seconds by execution
+  config.timeout = 3 # secconds, default: 3
+  config.security_level = 0 # (0..3), default: 0
 end
 ```
 
@@ -37,6 +38,7 @@ require 'build_box'
 result = nil
 result = BuildBox.perform(' 1 + 2 ');
 result.output # => 3
+result.result # => 3
 result.error? # => false
 result.error # => nil
 
@@ -51,8 +53,20 @@ BuildBox.perform('`rm -rf /`').output # => "NameError: undefined local variable 
 BuildBox.perform('exec("rm -rf /")').output # => "NameError: undefined local variable or method `exec' for main:Object" 
 BuildBox.perform('Kernel.exec("rm -rf /")').output # => "NameError: undefined local variable or method `exec' for Kernel:Module"BuildBox.perform(['require "open3"']).output # => ["NameError: undefined local variable or method `require' for main:Object"]
 
+# Execution params
+# BuildBox.perform(code, # => code to be performed
+                   binding_context=TOPLEVEL_BINDING, # => binding variable context (like ERB)
+                   security_level=BuildBox.config.security_level # => $SAFE directive. permited (0..3)
+                   )
+
+BuildBox('1+2', self.__binding__, 3).result # => 3
+
+# Hash Parameters
+BuildBox(code:'1+2', binding_context: self.__binding__, security_level: 3).result # => 3
+
 
 ```
+
 
 ## Contributing
 

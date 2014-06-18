@@ -11,6 +11,7 @@ module BuildBox
   end
   alias :config :configure
 
+  # TODO: change method to perform code *options
   def perform(code, binding_context=TOPLEVEL_BINDING, security_level=BuildBox.config.security_level)
     if code.is_a?(Hash)
       binding_context = code.fetch(:binding_context, binding_context)
