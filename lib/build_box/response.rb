@@ -4,8 +4,8 @@ class BuildBox::Response
 
   alias :result :output
 
-  def initialize(code, binding_context, security_level)
-    evaluate(code, binding_context, security_level)
+  def initialize(code, binding_context, security_level, timeout)
+    evaluate(code, binding_context, security_level, timeout)
   end
 
   def error?
@@ -14,9 +14,9 @@ class BuildBox::Response
 
   private
 
-  def evaluate(code, binding_context, security_level)
+  def evaluate(code, binding_context, security_level, timeout)
     preserve_namespace
-    result  = BuildBox::Perform.new(code, binding_context, security_level)
+    result  = BuildBox::Perform.new(code, binding_context, security_level, timeout)
     @output = result.output
     @error  = result.error
     @code   = result.code

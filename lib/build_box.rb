@@ -11,14 +11,8 @@ module BuildBox
   end
   alias :config :configure
 
-  # TODO: change method to perform code *options
-  def perform(code, binding_context=TOPLEVEL_BINDING, security_level=BuildBox.config.security_level)
-    if code.is_a?(Hash)
-      binding_context = code.fetch(:binding_context, binding_context)
-      security_level  = code.fetch(:security_level, security_level)
-      code            = code[:code] || (raise 'Code parameter must be informed.')
-    end
-    BuildBox::Response.new(code, binding_context, security_level)
+  def perform(code, binding_context: TOPLEVEL_BINDING, security_level: BuildBox.config.security_level, timeout: BuildBox.config.timeout)
+      BuildBox::Response.new(code, binding_context, security_level, timeout)
   end
 
 end

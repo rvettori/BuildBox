@@ -56,9 +56,10 @@ BuildBox.perform('Kernel.exec("rm -rf /")').output # => "NameError: undefined lo
 # Execution params
 # BuildBox.perform(code, # => code to be performed
                    binding_context=TOPLEVEL_BINDING, # => binding variable context (like ERB)
-                   security_level=BuildBox.config.security_level # => $SAFE directive. permited (0..3)
+                   security_level=BuildBox.config.security_level, # => $SAFE directive. permited (0..3)
+                   timeout: 3 # => in seconds
                    )
-
+  
 BuildBox('1+2', self.__binding__, 3).result # => 3
 
 # Hash Parameters

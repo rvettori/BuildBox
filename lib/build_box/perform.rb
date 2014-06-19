@@ -2,12 +2,13 @@ class BuildBox::Perform
 
   attr_accessor :output, :error, :code, :unbound_methods, :unbound_constants
 
-  def initialize(code, binding_context=TOPLEVEL_BINDING, security_level)
+  def initialize(code, binding_context=TOPLEVEL_BINDING, security_level, timeout)
     self.unbound_methods   = []
     self.unbound_constants = []
     self.code              = code
     @binding_context       = binding_context
     @security_level        = security_level
+    @timeout               = timeout
     evaluate
   end
 
@@ -22,17 +23,18 @@ class BuildBox::Perform
         @output = eval(@code, @binding_context, "build_box")
         @error  = nil
       rescue Exception => e
-        @error = "#{e.class}: #{e.to_s}"
+        @output = nil
+        @error  = "#{e.class}: #{e.to_s}"
       ensure
         restore_constants
         restore_methods
       end
     end
 
-    timeout = t.join(BuildBox.config.timeout)
+    timeout = t.join(@timeout)
     if timeout.nil?
-      @output = "BuildBoxError: execution expired"
-      @error = true
+      @error  = "BuildBoxError: execution expired"
+      @output = nil
     end
   end
 

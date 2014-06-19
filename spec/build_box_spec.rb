@@ -2,6 +2,49 @@ require 'spec_helper'
 
 describe "BuildBox" do
 
+  before(:each) do
+    
+    # BuildBox.configure do |config|
+    #   # config.security_level = 0
+    #   # config.timeout        = 3
+
+    #   # # Add new bad constants
+    #   # config.bad_constants << :Rails
+    #   # config.bad_constants << :ActiveRecord
+    #   # config.bad_constants << :Activity
+
+    #   # Constants used in test and migrations
+    #   config.bad_constants.delete(:Thread)
+    #   config.bad_constants.delete(:SystemExit)
+    #   config.bad_constants.delete(:SignalException)
+    #   config.bad_constants.delete(:Interrupt)
+    #   config.bad_constants.delete(:FileTest)
+    #   config.bad_constants.delete(:Signal)
+
+    #   # # Methods used int test and migrations
+    #   config.bad_methods.delete([:Object, :autoload])
+    #   config.bad_methods.delete([:Kernel, :autoload])
+    #   config.bad_methods.delete([:Object, :autoload?])
+    #   config.bad_methods.delete([:Kernel, :autoload?])
+    #   config.bad_methods.delete([:Object, :exit])
+    #   config.bad_methods.delete([:Kernel, :exit])
+    #   config.bad_methods.delete([:Object, :exit!])
+    #   config.bad_methods.delete([:Kernel, :exit!])
+    #   config.bad_methods.delete([:Object, :at_exit])
+    #   config.bad_methods.delete([:Kernel, :at_exit])
+    #   config.bad_methods.delete([:Object, :load])
+    #   config.bad_methods.delete([:Kernel, :load])
+    #   config.bad_methods.delete([:Object, :test])
+    #   config.bad_methods.delete([:Kernel, :test])
+    #   config.bad_methods.delete([:Object, :require])
+    #   config.bad_methods.delete([:Kernel, :require])
+    #   config.bad_methods.delete([:Object, :require_relative])
+    #   config.bad_methods.delete([:Kernel, :require_relative])
+    # end
+
+
+  end
+
   describe ".perform" do
     let(:correct_code){ '3+2+1'}
     let(:wrong_code){ '3+2+nil'}
@@ -63,30 +106,26 @@ describe "BuildBox" do
 
     it "permit add context varables" do
       ctx = OpenStruct.new(:params => {a: 1, b: 2})
-      expect(BuildBox.perform('params[:a] + params[:b]', ctx.__binding__).output).to eql(3)
+      expect(BuildBox.perform('params[:a] + params[:b]', binding_context: ctx.__binding__).output).to eql(3)
     end
 
     it "permit add define security level in specific perform" do
       code = %{ eval('{a: 1, b:2, c:3}')}
-      expect(BuildBox.perform(code, TOPLEVEL_BINDING, 0).result).to eql({a: 1, b:2, c:3})
-      expect(BuildBox.perform(code, TOPLEVEL_BINDING, 3).error?).to be_false
+      expect(BuildBox.perform(code, security_level: 0).result).to eql({a: 1, b:2, c:3})
+      expect(BuildBox.perform(code, security_level: 3).error?).to be_false
     end
 
     it "must permit pass hash parameters" do
       code = %{ eval('{a: 1, b:2, c:3}')}      
-      expect(BuildBox.perform(code: code, security_level: 0).result).to eql({a: 1, b:2, c:3})      
+      expect(BuildBox.perform(code, {security_level: 0}).result).to eql({a: 1, b:2, c:3})      
     end
 
-    it "must raise error when code key is not passed" do
-      code = %{ eval('{a: 1, b:2, c:3}')}
-      begin
-        expect(BuildBox.perform(cod: code, security_level: 0).result).to raise_error(RuntimeError) 
-      rescue => e 
-        raise e unless e.message == 'Code parameter must be informed.'
-      end
+    it "must permit inform timeout params" do      
+      BuildBox.config.bad_constants.clear
+      BuildBox.config.bad_methods.clear
+      code = %{ sleep 0.3 }
+      expect(BuildBox.perform(code, security_level:0, timeout: 0.1).error).to eql("BuildBoxError: execution expired")
     end
-
-
 
     context 'unsafe commands' do
       it 'does not exit' do
@@ -98,7 +137,7 @@ describe "BuildBox" do
       it 'does not exit for kernel' do
         expect(BuildBox.config).to receive(:bad_methods).at_least(:once).and_return([])
         expect(BuildBox.config).to receive(:bad_constants).at_least(:once).and_return([])
-        expect(BuildBox.perform('Kernel.exit').error).to eql("NameError: undefined local variable or method `exit' for Kernel:Module")
+        expect(BuildBox.perform('Kernel.exit').error).to eql("SystemExit: exit")
       end
 
       it 'does not exec' do
